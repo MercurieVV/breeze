@@ -8,20 +8,20 @@ object Common {
 
   def priorTo2_13(scalaVersion: String): Boolean = {
     CrossVersion.partialVersion(scalaVersion) match {
-      case Some((2, minor)) if minor < 13 => true
+      //case Some((2, minor)) if minor < 13 => true
       case _ => false
     }
   }
 
-  val buildCrossScalaVersions = Seq("3.4.2", "2.12.19", "2.13.14")
+  val buildCrossScalaVersions = Seq("3.6.4")
 
   lazy val buildScalaVersion = buildCrossScalaVersions.head
 
   val commonSettings = Seq(
     organization := "org.scalanlp",
     scalaVersion := buildScalaVersion,
-    crossScalaVersions := buildCrossScalaVersions,
-    scalacOptions ++= Seq("-deprecation", "-language:_"),
+    //crossScalaVersions := buildCrossScalaVersions,
+    scalacOptions ++= Seq("-deprecation"),
     javacOptions ++= Seq("-target", "1.8", "-source", "1.8"),
     credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
 
@@ -42,21 +42,21 @@ object Common {
       "org.scalacheck" %% "scalacheck" % "1.15.3" % "test"
     ),
     libraryDependencies ++= {
-      if (priorTo2_13(scalaVersion.value)) {
-        Seq(
-          compilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.patch),
-        )
-      } else {
+//      if (priorTo2_13(scalaVersion.value)) {
+//        Seq(
+//          compilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.patch),
+//        )
+//      } else {
         Seq(
 
         )
-      }
+//      }
     },
     scalacOptions ++= {
       CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, minor)) if minor < 13 => Seq.empty
-        case Some((2, 13)) =>
-          Seq("-Ymacro-annotations", "-language:implicitConversions")
+//        case Some((2, minor)) if minor < 13 => Seq.empty
+//        case Some((2, 13)) =>
+//          Seq("-Ymacro-annotations", "-language:implicitConversions")
         case _ =>
           Seq("-language:implicitConversions")
       }
@@ -68,21 +68,22 @@ object Common {
       false
     },
     sonatypeProfileName := "org.scalanlp",
+    version := "0.1.0-SNAPSHOT",
     publishMavenStyle := true,
     licenses := Seq("Apache Public License 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html")),
-    publishTo := sonatypePublishTo.value,
+    //publishTo := sonatypePublishTo.value,
     sonatypeProjectHosting := Some(GitHubHosting("scalanlp", "breeze", "David Hall", "david.lw.hall@gmail.com")),
 
     Compile / unmanagedSourceDirectories ++= {
       CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, 11|12)) => Seq(
-          baseDirectory.value / "src" / "main" / "scala_2.11_2.12",
-          baseDirectory.value / "src" / "main" / "scala_2",
-        )
-        case Some((2, 13)) => Seq(
-          baseDirectory.value / "src" / "main" / "scala_2",
-          baseDirectory.value / "src" / "main" / "scala_2.13+"
-        )
+//        case Some((2, 11|12)) => Seq(
+//          baseDirectory.value / "src" / "main" / "scala_2.11_2.12",
+//          baseDirectory.value / "src" / "main" / "scala_2",
+//        )
+//        case Some((2, 13)) => Seq(
+//          baseDirectory.value / "src" / "main" / "scala_2",
+//          baseDirectory.value / "src" / "main" / "scala_2.13+"
+//        )
         case Some( (3, _)) => Seq(
           baseDirectory.value / "src" / "main" / "scala_2.13+",
           baseDirectory.value / "src" / "main" / "scala_3"

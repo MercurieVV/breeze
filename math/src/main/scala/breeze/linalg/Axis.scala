@@ -44,7 +44,7 @@ object Axis {
                                                                           impl: UImpl2[Tag, TA, V3, VR],
                                                                           collapse: CanCollapseAxis[V1, AxisT, TA, VR, Result]): UImpl3[Tag, V1, AxisT, V3, Result] = {
     new UImpl3[Tag, V1, AxisT, V3, Result] {
-      def apply(v: V1, v2: AxisT, v3: V3): Result = collapse.apply(v, v2)(impl(_, v3))
+      inline def apply(v: V1, v2: AxisT, v3: V3): Result = collapse.apply(v, v2)(impl(_, v3))
     }
   }
 }

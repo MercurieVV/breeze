@@ -93,7 +93,7 @@ trait BroadcastedColumnsOps {
       cc: CanCollapseAxis[T, Axis._0.type, ColumnType, OpResult, Result])
     : UImpl2[Op, BroadcastedColumns[T, ColumnType], RHS, Result] = {
     new UImpl2[Op, BroadcastedColumns[T, ColumnType], RHS, Result] {
-      def apply(v: BroadcastedColumns[T, ColumnType], v2: RHS): Result = {
+      inline def apply(v: BroadcastedColumns[T, ColumnType], v2: RHS): Result = {
         cc(v.underlying, Axis._0) { op(_, v2) }
       }
     }
@@ -105,7 +105,7 @@ trait BroadcastedColumnsOps {
       cc: CanCollapseAxis[T, Axis._0.type, ColumnType, OpResult, Result])
   : UImpl2[Op, LHS, BroadcastedColumns[T, ColumnType], Result] = {
     new UImpl2[Op, LHS, BroadcastedColumns[T, ColumnType], Result] {
-      def apply(v: LHS, v2: BroadcastedColumns[T, ColumnType]): Result = {
+      inline def apply(v: LHS, v2: BroadcastedColumns[T, ColumnType]): Result = {
         cc(v2.underlying, Axis._0) { op(v, _) }
       }
     }

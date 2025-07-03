@@ -117,7 +117,7 @@ trait TensorLike[@spec(Int) K, @spec(Double, Int, Float, Long) V, +This <: Tenso
   }
 
   /** Creates a new map containing a transformed copy of this map. */
-  def mapValues[O, That](f: V => O)(implicit bf: CanMapValues[This @uncheckedVariance, V, O, That]): That = {
+  inline def mapValues[O, That](f: V => O)(implicit bf: CanMapValues[This @uncheckedVariance, V, O, That]): That = {
     bf.map(repr, f)
   }
 

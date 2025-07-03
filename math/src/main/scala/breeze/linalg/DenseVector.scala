@@ -73,7 +73,7 @@ class DenseVector[@spec(Double, Int, Float, Long) V](
 
   def activeSize = length
 
-  def apply(i: Int): V = {
+  inline def apply(i: Int): V = {
     if (i < -size || i >= size) throw new IndexOutOfBoundsException(s"$i not in [-$size,$size)")
     val trueI = if (i < 0) i + size else i
     if (noOffsetOrStride) {
@@ -507,7 +507,7 @@ object DenseVector extends VectorConstructors[DenseVector] {
     def create(length: Int) = DenseVector(new Array[RV](length))
 
     /**Maps all corresponding values from the two collection. */
-    def map(from: DenseVector[V], from2: DenseVector[V], fn: (V, V) => RV): DenseVector[RV] = {
+    inline def map(from: DenseVector[V], from2: DenseVector[V], fn: (V, V) => RV): DenseVector[RV] = {
       require(from.length == from2.length, s"Vectors must have same length")
       val result = create(from.length)
       var i = 0

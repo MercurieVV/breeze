@@ -28,13 +28,13 @@ trait MatrixInnerProduct[M, S] extends MatrixNorms[M, S] {
     override def apply(v: M, v2: M): S = innerProduct(v, v2)
   }
 
-  implicit def canInnerProductNorm_Ring(implicit ring: Ring[S]): norm.Impl[M, Double] = new norm.Impl[M, Double] {
+  inline implicit def canInnerProductNorm_Ring(implicit ring: Ring[S]): norm.Impl[M, Double] = new norm.Impl[M, Double] {
     override def apply(v: M): Double = sqrt(implicitly[Ring[S]].sNorm(canInnerProduct(v, v)))
   }
 }
 
 object EntrywiseMatrixNorms {
-  def make[M, S](implicit field: Field[S], hadamard: OpMulScalar.Impl2[M, M, M], iter: CanTraverseValues[M, S]) =
+  inline def make[M, S](implicit field: Field[S], hadamard: OpMulScalar.Impl2[M, M, M], iter: CanTraverseValues[M, S]) =
     new MatrixInnerProduct[M, S] {
 
       override def innerProduct(m1: M, m2: M): S = sum(hadamard(m1, m2))

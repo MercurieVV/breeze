@@ -24,7 +24,7 @@ import breeze.storage.Zero
 import scala.annotation.unchecked.uncheckedVariance
 import scala.reflect.ClassTag
 
-trait ImmutableNumericOps[+This] extends Any with HasOps {
+trait ImmutableNumericOps[@specialized +This] extends Any with HasOps {
   def repr: This
 
   // Immutable
@@ -47,18 +47,18 @@ trait ImmutableNumericOps[+This] extends Any with HasOps {
   final def unary_-[That](implicit op: OpNeg.Impl[This @uncheckedVariance, That]) = op(repr)
 
   /** Element-wise difference of this and b. */
-  final def -:-[B, That](b: B)(implicit op: OpSub.Impl2[This @uncheckedVariance, B, That]) = op(repr, b)
+  inline final def -:-[B, That](b: B)(implicit op: OpSub.Impl2[This @uncheckedVariance, B, That]) = op(repr, b)
 
   /** Alias for -:-(b) for all b. */
-  final def -[B, That](b: B)(implicit op: OpSub.Impl2[This @uncheckedVariance, B, That]) = {
+  inline final def -[@specialized(Int, Double, Float) B, @specialized That](b: B)(implicit op: OpSub.Impl2[This @uncheckedVariance, B, That]) = {
     op(repr, b)
   }
 
   /** Element-wise modulo of this and b. */
-  final def %:%[B, That](b: B)(implicit op: OpMod.Impl2[This @uncheckedVariance, B, That]) = op(repr, b)
+  inline final def %:%[B, That](b: B)(implicit op: OpMod.Impl2[This @uncheckedVariance, B, That]) = op(repr, b)
 
   /** Alias for :%(b) when b is a scalar. */
-  final def %[B, That](b: B)(implicit op: OpMod.Impl2[This @uncheckedVariance, B, That]) = {
+  inline final def %[B, That](b: B)(implicit op: OpMod.Impl2[This @uncheckedVariance, B, That]) = {
     op(repr, b)
   }
 
@@ -68,18 +68,18 @@ trait ImmutableNumericOps[+This] extends Any with HasOps {
 
   // Immutable
   /** Element-wise quotient of this and b. */
-  final def /:/[B, That](b: B)(implicit op: OpDiv.Impl2[This @uncheckedVariance, B, That]) = op(repr, b)
+  inline final def /:/[B, That](b: B)(implicit op: OpDiv.Impl2[This @uncheckedVariance, B, That]) = op(repr, b)
 
   /** Alias for :/(b) when b is a scalar. */
-  final def /[B, That](b: B)(implicit op: OpDiv.Impl2[This @uncheckedVariance, B, That]) = {
+  inline final def /[@specialized(Int, Double, Float) B, @specialized That](b: B)(implicit op: OpDiv.Impl2[This @uncheckedVariance, B, That]) = {
     op(repr, b)
   }
 
   /** Element-wise exponentiation of this and b. */
-  final def ^:^[B, That](b: B)(implicit op: OpPow.Impl2[This @uncheckedVariance, B, That]) = op(repr, b)
+  inline final def ^:^[B, That](b: B)(implicit op: OpPow.Impl2[This @uncheckedVariance, B, That]) = op(repr, b)
 
   /** Inner product of this and b. */
-  final def dot[B, BB >: B, That](b: B)(implicit op: OpMulInner.Impl2[This @uncheckedVariance, BB, That]) = op(repr, b)
+  inline final def dot[B, BB >: B, That](b: B)(implicit op: OpMulInner.Impl2[This @uncheckedVariance, BB, That]) = op(repr, b)
 
   /*
    * Logical Ops
@@ -88,26 +88,26 @@ trait ImmutableNumericOps[+This] extends Any with HasOps {
   final def unary_![That](implicit op: OpNot.Impl[This @uncheckedVariance, That]) = op(repr)
 
   /** Element-wise logical "and" operator -- returns true if corresponding elements are non-zero. */
-  final def &:&[B, That](b: B)(implicit op: OpAnd.Impl2[This @uncheckedVariance, B, That]) = op(repr, b)
+  inline final def &:&[B, That](b: B)(implicit op: OpAnd.Impl2[This @uncheckedVariance, B, That]) = op(repr, b)
 
   /** Element-wise logical "or" operator -- returns true if either element is non-zero. */
-  final def |:|[B, That](b: B)(implicit op: OpOr.Impl2[This @uncheckedVariance, B, That]) = op(repr, b)
+  inline final def |:|[B, That](b: B)(implicit op: OpOr.Impl2[This @uncheckedVariance, B, That]) = op(repr, b)
 
   /** Element-wise logical "xor" operator -- returns true if only one of the corresponding elements is non-zero. */
-  final def ^^:^^[B, That](b: B)(implicit op: OpXor.Impl2[This @uncheckedVariance, B, That]) = op(repr, b)
+  inline final def ^^:^^[B, That](b: B)(implicit op: OpXor.Impl2[This @uncheckedVariance, B, That]) = op(repr, b)
 
   /** Alias for &:&(b) for all b. */
-  final def &[B, That](b: B)(implicit op: OpAnd.Impl2[This @uncheckedVariance, B, That]) = {
+  inline final def &[B, That](b: B)(implicit op: OpAnd.Impl2[This @uncheckedVariance, B, That]) = {
     op(repr, b)
   }
 
   /** Alias for :||(b) for all b. */
-  final def |[B, That](b: B)(implicit op: OpOr.Impl2[This @uncheckedVariance, B, That]) = {
+  inline final def |[B, That](b: B)(implicit op: OpOr.Impl2[This @uncheckedVariance, B, That]) = {
     op(repr, b)
   }
 
   /** Alias for :^^(b) for all b. */
-  final def ^^[B, That](b: B)(implicit op: OpXor.Impl2[This @uncheckedVariance, B, That]): That = {
+  inline final def ^^[B, That](b: B)(implicit op: OpXor.Impl2[This @uncheckedVariance, B, That]): That = {
     op(repr, b)
   }
 
@@ -115,7 +115,7 @@ trait ImmutableNumericOps[+This] extends Any with HasOps {
    * Matrix-y ops
    */
   /** Matrix multiplication */
-  final def *[B, That](b: B)(implicit op: OpMulMatrix.Impl2[This @uncheckedVariance, B, That]) = {
+  inline final def *[@specialized(Int, Double, Float) B, @specialized That](b: B)(implicit op: OpMulMatrix.Impl2[This @uncheckedVariance, B, That]) = {
     op(repr, b)
   }
 
@@ -124,7 +124,7 @@ trait ImmutableNumericOps[+This] extends Any with HasOps {
     op.apply(repr)
 
   /** Shaped solve of this by b. */
-  def \[B, That](b: B)(implicit op: OpSolveMatrixBy.Impl2[This @uncheckedVariance, B, That]) =
+  inline def \[@specialized(Int, Double, Float) B, @specialized That](b: B)(implicit op: OpSolveMatrixBy.Impl2[This @uncheckedVariance, B, That]) =
     op.apply(repr, b)
 
   /** A transposed view of this object, followed by a slice. Sadly frequently necessary. */
@@ -150,7 +150,7 @@ trait NumericOps[+This] extends ImmutableNumericOps[This] {
 
   // We move this here because of ambiguities with any2stringadd
   /** Alias for :+(b) for all b. */
-  final def +[B, C, That](b: B)(implicit op: OpAdd.Impl2[This @uncheckedVariance, B, That]) = {
+  inline final def +[@specialized(Int, Double, Float) B, @specialized C, @specialized That](b: B)(implicit op: OpAdd.Impl2[This @uncheckedVariance, B, That]) = {
     op(repr, b)
   }
 

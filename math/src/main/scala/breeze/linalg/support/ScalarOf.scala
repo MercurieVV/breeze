@@ -23,11 +23,11 @@ package breeze.linalg.support
  *
  * @author dlwh
  **/
-sealed trait ScalarOf[V, S] {}
+sealed trait ScalarOf[@specialized V, @specialized S] {}
 
 object ScalarOf {
   object DummyInstance extends ScalarOf[Any, Any]
-  def dummy[V, S]: ScalarOf[V, S] = DummyInstance.asInstanceOf[ScalarOf[V, S]]
+  inline def dummy[@specialized V, @specialized S]: ScalarOf[V, S] = DummyInstance.asInstanceOf[ScalarOf[V, S]]
 
   implicit def scalarOfArray[T]: ScalarOf[Array[T], T] = dummy
 

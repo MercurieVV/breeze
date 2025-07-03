@@ -12,7 +12,7 @@ import scala.util._
 import breeze.macros._
 
 trait GenericOpsLowPrio3 {
-  implicit def impl_T_S_eq_U_from_ZipMap[Tag, T, V1, VR, U](implicit handhold: ScalarOf[T, V1],
+  inline implicit def impl_T_S_eq_U_from_ZipMap[Tag, @specialized T, @specialized(Double, Int, Float, Long) V1, @specialized(Double, Int, Float, Long) VR, @specialized(Double, Int, Float, Long) U](implicit handhold: ScalarOf[T, V1],
                                                             impl: UFunc.UImpl2[Tag, V1, V1, VR],
                                                             canZipMapValues: CanZipMapValues[T, V1, VR, U]): UFunc.UImpl2[Tag, T, T, U] = {
     (v1: T, v2: T) => canZipMapValues.map(v1, v2, impl.apply)
@@ -149,7 +149,7 @@ trait GenericOps extends GenericOpsLowPrio {
     scaleAdd.inPlace(t, ring.negate(ring.one), v)
   }
 
-  implicit def impl_OpNeg_T_Generic_from_OpMulScalar[T, U, V](implicit scalarOf: ScalarOf[T, V], ring: Ring[V], scale: OpMulScalar.Impl2[T, V, U]): OpNeg.Impl[T, U] = {
+  implicit def impl_OpNeg_T_Generic_from_OpMulScalar[@specialized T, @specialized U, @specialized V](implicit scalarOf: ScalarOf[T, V], ring: Ring[V], scale: OpMulScalar.Impl2[T, V, U]): OpNeg.Impl[T, U] = {
     new OpNeg.Impl[T, U] {
       override def apply(a: T): U = {
         scale(a, ring.negate(ring.one))

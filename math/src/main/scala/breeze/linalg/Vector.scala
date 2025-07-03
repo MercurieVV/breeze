@@ -221,7 +221,7 @@ trait VectorConstructors[Vec[T] <: Vector[T]] {
    * @tparam V
    * @return
    */
-  def apply[V: ClassTag](values: V*): Vec[V] = {
+  inline def apply[@specialized V: ClassTag](values: V*): Vec[V] = {
     // manual specialization so that we create the right DenseVector specialization... @specialized doesn't work here
     val man = implicitly[ClassTag[V]]
     if (man == implicitly[ClassTag[Double]]) apply(values.toArray.asInstanceOf[Array[Double]]).asInstanceOf[Vec[V]]

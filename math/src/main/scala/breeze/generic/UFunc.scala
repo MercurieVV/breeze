@@ -46,7 +46,7 @@ trait UFunc extends HasOps {
   final def apply[@specialized(Int, Double, Float) V, @specialized(Int, Double, Float) VR](v: V)(
       implicit impl: Impl[V, VR]): VR = impl(v)
 
-  final def apply[
+  inline final def apply[
       @specialized(Int, Double, Float) V1,
       @specialized(Int, Double, Float) V2,
       @specialized(Int, Double, Float) VR](v1: V1, v2: V2)(implicit impl: Impl2[V1, V2, VR]): VR = impl(v1, v2)
@@ -74,7 +74,7 @@ trait UFunc extends HasOps {
 //  @implicitNotFound("Could not find an implicit implementation for this UFunc with arguments ${V}")
   type Impl[V, VR] = UFunc.UImpl[this.type, V, VR]
 //  @implicitNotFound("Could not find an implicit implementation for this UFunc with arguments ${V1}, ${V2}")
-  type Impl2[V1, V2, VR] = UFunc.UImpl2[this.type, V1, V2, VR]
+  type Impl2[@specialized V1, @specialized V2, @specialized VR] = UFunc.UImpl2[this.type, V1, V2, VR]
 //  @implicitNotFound("Could not find an implicit implementation for this UFunc with arguments ${V1}, ${V2}, ${V3}")
   type Impl3[V1, V2, V3, VR] = UFunc.UImpl3[this.type, V1, V2, V3, VR]
 //  @implicitNotFound("Could not find an implicit implementation for this UFunc with arguments ${V1}, ${V2}, ${V3}, ${V4}")
@@ -96,10 +96,10 @@ trait UFunc extends HasOps {
 }
 
 trait VariableUFunc[U <: UFunc, T <: VariableUFunc[U, T]] { self: T =>
-  final def apply[@specialized(Int, Double, Float) V, @specialized(Int, Double, Float) VR](v: V)(
+  inline final def apply[@specialized(Int, Double, Float) V, @specialized(Int, Double, Float) VR](v: V)(
       implicit impl: UFunc.UImpl2[U, T, V, VR]): VR = impl(self, v)
 
-  final def apply[
+  inline final def apply[
       @specialized(Int, Double, Float) V1,
       @specialized(Int, Double, Float) V2,
       @specialized(Int, Double, Float) VR](v1: V1, v2: V2)(implicit impl: UFunc.UImpl3[U, T, V1, V2, VR]): VR =
@@ -122,7 +122,9 @@ trait MappingUFuncOps extends MappingUFuncLowPrio with GenericOps {
   implicit def canZipMapValuesImpl_T[Tag <: MappingUFunc, T, V1, VR, U](implicit handhold: ScalarOf[T, V1],
                                                       impl: UFunc.UImpl2[Tag, V1, V1, VR],
                                                       canZipMapValues: CanZipMapValues[T, V1, VR, U]): UFunc.UImpl2[Tag, T, T, U] = {
-    (v1: T, v2: T) => canZipMapValues.map(v1, v2, impl.apply)
+    new UFunc.UImpl2[Tag, T, T, U]{
+      inline override def apply(v1: T, v2: T): U = canZipMapValues.map(v1, v2, impl.apply)
+    }
   }
 
   implicit def canTransformValuesUFunc_T[Tag<:MappingUFunc, T, V](
@@ -133,7 +135,7 @@ trait MappingUFuncOps extends MappingUFuncLowPrio with GenericOps {
     }
   }
 
-  implicit def canTransformValuesUFunc2_T[Tag <: MappingUFunc, T, V, V2](
+  inline implicit def canTransformValuesUFunc2_T[Tag <: MappingUFunc, T, V, V2](
                                                         implicit canTransform: CanTransformValues[T, V],
                                                         impl: UImpl2[Tag, V, V2, V]): InPlaceImpl2[Tag, T, V2] = {
     new InPlaceImpl2[Tag, T, V2] {
@@ -141,7 +143,7 @@ trait MappingUFuncOps extends MappingUFuncLowPrio with GenericOps {
     }
   }
 
-  implicit def fromLowOrderCanMapValues[Op <: MappingUFunc, T, V, V2, U](
+  inline implicit def fromLowOrderCanMapValues[Op <: MappingUFunc, T, V, V2, U](
                                                       implicit handhold: ScalarOf[T, V],
                                                       impl: UFunc.UImpl[Op, V, V2],
                                                       canMapValues: CanMapValues[T, V, V2, U]): UFunc.UImpl[Op, T, U] = {
@@ -150,7 +152,7 @@ trait MappingUFuncOps extends MappingUFuncLowPrio with GenericOps {
     }
   }
 
-  implicit def canMapV1DV[Op <: MappingUFunc, T, V1, V2, VR, U](
+  inline implicit def canMapV1DV[Op <: MappingUFunc, T, V1, V2, VR, U](
                                              implicit handhold: ScalarOf[T, V1],
                                              impl: UFunc.UImpl2[Op,V1, V2, VR],
                                              canMapValues: CanMapValues[T, V1, VR, U]): UFunc.UImpl2[Op, T, V2, U] = {
@@ -162,7 +164,7 @@ trait MappingUFuncOps extends MappingUFuncLowPrio with GenericOps {
 }
 
 sealed trait MappingUFuncLowPrio extends GenericOps {
-  implicit def canMapV2Values[Op <: MappingUFunc, T, V1, V2, VR, U](
+  inline implicit def canMapV2Values[Op <: MappingUFunc, T, V1, V2, VR, U](
       implicit handhold: ScalarOf[T, V2],
       impl: UFunc.UImpl2[Op, V1, V2, VR],
       canMapValues: CanMapValues[T, V2, VR, U]): UFunc.UImpl2[Op, V1, T, U] = {
@@ -175,7 +177,7 @@ sealed trait MappingUFuncLowPrio extends GenericOps {
 
 
 trait ZeroPreservingUFuncOps extends ZeroPreservingUFuncLowPrio with MappingUFuncOps {
-  implicit def fromLowOrderCanMapActiveValues[Op <: ZeroPreservingUFunc, T, V, V2, U](
+  inline implicit def fromLowOrderCanMapActiveValues[Op <: ZeroPreservingUFunc, T, V, V2, U](
       implicit handhold: ScalarOf[T, V],
       impl: UFunc.UImpl[Op, V, V2],
       canMapValues: CanMapValues[T, V, V2, U]): UFunc.UImpl[Op, T, U] = {
@@ -184,7 +186,7 @@ trait ZeroPreservingUFuncOps extends ZeroPreservingUFuncLowPrio with MappingUFun
     }
   }
 
-  implicit def canMapActiveV1DV[Op <: ZeroPreservingUFunc, T, V1, V2, VR, U](
+  inline implicit def canMapActiveV1DV[Op <: ZeroPreservingUFunc, T, V1, V2, VR, U](
       implicit handhold: ScalarOf[T, V1],
       impl: UFunc.UImpl2[Op, V1, V2, VR],
       canMapValues: CanMapValues[T, V1, VR, U]): UFunc.UImpl2[Op, T, V2, U] = {
@@ -193,14 +195,14 @@ trait ZeroPreservingUFuncOps extends ZeroPreservingUFuncLowPrio with MappingUFun
     }
   }
 
-  implicit def canTransformActiveValuesUFunc[Tag <: ZeroPreservingUFunc, T, V](
+  inline implicit def canTransformActiveValuesUFunc[Tag <: ZeroPreservingUFunc, T, V](
                                                                    implicit canTransform: CanTransformValues[T, V],
                                                                    impl: UImpl[Tag, V, V]): InPlaceImpl[Tag, T] = {
     (v: T) => canTransform.transformActive(v, impl.apply)
   }
 
 
-  implicit def canTransformActiveValuesUFunc2_T[Tag <: ZeroPreservingUFunc, T, V, V2](
+  inline implicit def canTransformActiveValuesUFunc2_T[Tag <: ZeroPreservingUFunc, T, V, V2](
                                                                           implicit canTransform: CanTransformValues[T, V],
                                                                           impl: UImpl2[Tag, V, V2, V]): InPlaceImpl2[Tag, T, V2] = {
     new InPlaceImpl2[Tag, T, V2] {
@@ -212,7 +214,7 @@ trait ZeroPreservingUFuncOps extends ZeroPreservingUFuncLowPrio with MappingUFun
 }
 
 sealed trait ZeroPreservingUFuncLowPrio extends MappingUFuncOps {
-  implicit def canMapV2ActiveValues[Op <: ZeroPreservingUFunc, T, V1, V2, VR, U](
+  inline implicit def canMapV2ActiveValues[Op <: ZeroPreservingUFunc, T, V1, V2, VR, U](
       implicit handhold: ScalarOf[T, V2],
       impl: UFunc.UImpl2[Op, V1, V2, VR],
       canMapValues: CanMapValues[T, V2, VR, U]): UFunc.UImpl2[Op, V1, T, U] = {
@@ -239,7 +241,7 @@ object UFunc {
       @specialized(Int, Double, Float) V2,
       @specialized(Int, Double, Float) +VR]
       extends Serializable {
-    def apply(v: V1, v2: V2): VR
+  def apply(v: V1, v2: V2): VR
   }
 
 //  @implicitNotFound("Could not find an implicit implementation for ${Tag} with arguments ${V1}, ${V2}, ${V3}")
